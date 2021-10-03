@@ -8,7 +8,7 @@ class BasePage:
     def __init__(self, driver):
         self.driver = driver
 
-    def find_elem(self, locator, time=5):
+    def find_elem(self, locator, time=10):
         try:
             element = webdw(self.driver, time).until(
                 EC.presence_of_element_located(locator),
@@ -19,7 +19,7 @@ class BasePage:
             print(e.msg)
             pass
 
-    def find_elems(self, locator, time=5):
+    def find_elems(self, locator, time=10):
         try:
             elements = webdw(self.driver, time).until(
                 EC.presence_of_all_elements_located(locator),

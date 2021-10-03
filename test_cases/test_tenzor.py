@@ -1,40 +1,16 @@
-import time
 import unittest
 
-from selenium import webdriver
-from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.keys import Keys
-
-import services
-from yandex_pages import HomeYandexPage, YandexLocator
+import print_services as PServ
+from environment import TestEnvironment
+from yandex_pages import HomeYandexPage
 
 
-START_PAGE = 'http://yandex.ru/'
-TEST_DRIVER = 'Chrome'
+class TenzorTest(TestEnvironment):
 
+    def test_tenzor_search_case(self):
+        """Tests cases with entered word in given search engine."""
 
-class TenzorTest(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(cls) -> None:
-        cls.driver = webdriver.Chrome()
-        cls.driver.get(START_PAGE)
-        cls.driver.set_page_load_timeout(10)
-        services.show_set_up_info(TEST_DRIVER)
-        cls.driver.implicitly_wait(5)
-        cls.driver.maximize_window()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        driver = TenzorTest.driver
-        if driver is not None:
-            services.show_set_down_info()
-            driver.close()
-            driver.quit()
-
-    def test_search_input_field_observed(self):
-        """Checks if input search field is present on web page."""
-        driver = TenzorTest.driver
+        driver = self.driver
         page = HomeYandexPage(driver)
         input_field = page.get_search_field()
 
@@ -43,31 +19,47 @@ class TenzorTest(unittest.TestCase):
             None,
             msg='None вместо объекта - поисковая строка не найдена.'
         )
+        PServ.show_test_case_succeeded('input_search_field')
 
-    def test_suggest_table_is_shown(self):
-        """
-        Checks if suggestion list obtained for entered word in search field.
-        """
-        driver = TenzorTest.driver
-        page = HomeYandexPage(driver)
         page.search_field.clear()
         page.enter_word('тензор')
         suggest_table = page.get_suggest_table()
-        self.assertNotEqual(
+        self.assertIsNotNone(
             suggest_table,
-            None,
             msg='None вместо предложений - таблица вариантов не найдена.'
         )
+        PServ.show_test_case_succeeded('suggest_table')
 
-    # def test_search_results_page_is_shown(self):
-    #     driver = TenzorTest.driver
-    #     page = HomeYandexPage(driver)
-    #     page.search_field.clear()
-    #     page.enter_word('тензор')
-    #     page.press_enter()
+        page.press_enter()
+        table_with_search_results = page.get_search_result_table()
+        self.assertIsNotNone(
+            table_with_search_results,
+            msg='None вместо результатов поиска - таблица не обнаружена.'
+        )
+        PServ.show_test_case_succeeded('table_with_search_results')
 
+        result_links = page.get_result_links()
+        self.assertGreater(
+            len(result_links),
+            0,
+            msg='В результатах поиска нет предлагаемых вариантов.')
+        PServ.show_test_case_succeeded('result_links')
 
+        looking_for_link = 'tensor.ru'
+        looking_for_link_found = False
 
+        for variant in result_links:
+            item_link = variant.get_attribute('href')
+
+            for i in range(5):
+                if looking_for_link in item_link:
+                    looking_for_link_found = True
+
+        self.assertTrue(
+            looking_for_link_found,
+            msg=f'{looking_for_link} is not in search results table.'
+        )
+        PServ.show_test_case_succeeded('looking_for_link')
 
 
 if __name__ == "__main__":
