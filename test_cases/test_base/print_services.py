@@ -17,8 +17,8 @@ def show_set_down_info() -> None:
     print(f'Run completed at: {datetime.now()}')
 
 
-def show_test_case_succeeded(test_condition) -> None:
-    """Prints to console success statuses for received test case."""
+def show_tenzor_test_case_succeeded(test_condition) -> None:
+    """Prints to console success statuses for received tenzor test case."""
 
     test_cases_success_outputs = {
         'input_search_field': 'Input search field found. OK.',
@@ -28,3 +28,15 @@ def show_test_case_succeeded(test_condition) -> None:
         'looking_for_link': 'Looking for link found in given range. OK.'
     }
     print(test_cases_success_outputs[test_condition])
+
+
+def show_image_test_case_succeeded(test_condition) -> None:
+    """Prints to console success statuses for received image test case."""
+
+    image_test_cases_success_outputs = {
+        'image_block': 'Yandex image block "Картинки" found. OK.',
+        'new_tab_url': 'New tab url opened as expected. OK.',
+        'new_page_url': 'Opened page has url as expected. OK.',
+        'image_search_text': 'Input search text same with chosen category. OK.',
+    }
+    print(image_test_cases_success_outputs[test_condition])

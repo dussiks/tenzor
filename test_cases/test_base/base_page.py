@@ -29,3 +29,10 @@ class BasePage:
         except TimeoutException as e:
             print(e.msg)
             pass
+
+    def get_page_url(self) -> str:
+        return self.driver.current_url
+
+    def change_to_second_tab(self):
+        new_page = self.driver.window_handles[1]
+        return self.driver.switch_to.window(new_page)
