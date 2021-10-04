@@ -5,10 +5,17 @@ from test_base.environment import TestEnvironment
 from test_base.exceptions import ObjectIsNotFoundOnWebPage
 from test_base.home_page import YandexHomePage
 from test_base.image_page import YandexImagePage
-from test_base.utils import get_image_search_text
+from test_base.utils import get_hashed_image, get_image_search_text
 
 
-class YandexImage(TestEnvironment):
+IMAGES_BLOCK_NAME = 'Картинки'
+IMAGES_BLOCK_URL = 'https://yandex.ru/images/'
+IMAGES_BLOCK_NUMBER = 0
+IMAGE_ORDER_NUMBER = 0
+IMAGES_FOLDER_NAME = 'temp_images/'
+
+
+class TestImageSearch(TestEnvironment):
 
     def test_yandex_image_case(self):
         """Tests cases with images block in given search engine."""
@@ -22,7 +29,7 @@ class YandexImage(TestEnvironment):
                 'Yandex image block is not found.'
             )
 
-        expected_text = 'Картинки'
+        expected_text = IMAGES_BLOCK_NAME
         self.assertEqual(
             expected_text.lower(),
             yandex_images.text.lower(),
@@ -35,7 +42,7 @@ class YandexImage(TestEnvironment):
 
         image_page = YandexImagePage(driver)  # new class for page with images
         page_url = image_page.get_page_url()
-        expected_url = 'https://yandex.ru/images/'
+        expected_url = IMAGES_BLOCK_URL
         self.assertIn(
             expected_url,
             page_url,
@@ -43,26 +50,26 @@ class YandexImage(TestEnvironment):
         )
         PServ.show_image_test_case_succeeded('new_tab_url')
 
-        images_categories = image_page.get_images_categories()
+        categories = image_page.images_categories
 
-        if len(images_categories) < 1:
+        if len(categories) < 1:  # if list is empty
             raise ObjectIsNotFoundOnWebPage(
                 'No image categories found on web page.'
             )
 
-        first_category = images_categories[0]
-        first_category_url = image_page.get_image_category_url()
-        first_category.click()
+        category = categories[IMAGES_BLOCK_NUMBER]
+        category_url = image_page.get_image_category_url()
+        category.click()
         new_page_url = image_page.get_page_url()
         self.assertEqual(
-            first_category_url,
+            category_url,
             new_page_url,
             msg=f'Opened page url: {new_page_url}.'
-                f'Expected url: {first_category_url}'
+                f'Expected url: {category_url}'
         )
         PServ.show_image_test_case_succeeded('new_page_url')
 
-        expected_text = first_category.text
+        expected_text = category.text
         current_url = image_page.get_page_url()
         image_search_text = get_image_search_text(current_url)
         self.assertEqual(
@@ -73,7 +80,51 @@ class YandexImage(TestEnvironment):
         )
         PServ.show_image_test_case_succeeded('image_search_text')
 
+        preview_image = image_page.get_preview_image(IMAGE_ORDER_NUMBER)
+        preview_image.click()
+        image_view = image_page.get_image_view()
+        self.assertIsNotNone(
+            image_view,
+            msg='Image view is not found.'
+        )
+        PServ.show_image_test_case_succeeded('image_view')
 
+        first_image_url = image_page.get_image_view_src()
+        first_image = get_hashed_image(
+            url=first_image_url,
+            image_name='first_image.jpg',
+            download_folder=IMAGES_FOLDER_NAME
+        )
+
+        image_page.slide_image_forward()
+        second_image_url = image_page.get_image_view_src()
+        second_image = get_hashed_image(
+            url=second_image_url,
+            image_name=f'second_image.jpg',
+            download_folder=IMAGES_FOLDER_NAME
+        )
+
+        self.assertNotEqual(
+            first_image,
+            second_image,
+            msg='Image was not changed after clicking to next image.'
+        )
+        PServ.show_image_test_case_succeeded('click_next_image')
+
+        image_page.slide_image_backward()
+        control_image_url = image_page.get_image_view_src()
+        control_image = get_hashed_image(
+            url=control_image_url,
+            image_name=f'control_image.jpg',
+            download_folder=IMAGES_FOLDER_NAME
+        )
+        self.assertEqual(
+            first_image,
+            control_image,
+            msg='View returned to not same image after'
+                'clicking backward button.'
+        )
+        PServ.show_image_test_case_succeeded('return_to_image')
 
 
 if __name__ == "__main__":

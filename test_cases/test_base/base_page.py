@@ -1,5 +1,5 @@
 from selenium.webdriver.support.wait import WebDriverWait as webdw
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import TimeoutException
 
 
@@ -11,7 +11,7 @@ class BasePage:
     def find_elem(self, locator, time=10):
         try:
             element = webdw(self.driver, time).until(
-                EC.presence_of_element_located(locator),
+                ec.presence_of_element_located(locator),
                 message=f"Can not find element by locator {locator}"
             )
             return element
@@ -22,7 +22,7 @@ class BasePage:
     def find_elems(self, locator, time=10):
         try:
             elements = webdw(self.driver, time).until(
-                EC.presence_of_all_elements_located(locator),
+                ec.presence_of_all_elements_located(locator),
                 message=f"Can not find elements by locator {locator}"
             )
             return elements
