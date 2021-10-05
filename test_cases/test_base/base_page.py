@@ -1,6 +1,6 @@
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support.wait import WebDriverWait as webdw
 from selenium.webdriver.support import expected_conditions as ec
-from selenium.common.exceptions import TimeoutException
 
 
 class BasePage:
@@ -35,4 +35,4 @@ class BasePage:
 
     def change_to_second_tab(self):
         new_page = self.driver.window_handles[1]
-        return self.driver.switch_to.window(new_page)
+            return self.driver.switch_to.window(new_page)
