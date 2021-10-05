@@ -8,7 +8,11 @@ from urllib.parse import unquote
 def get_image_search_text(search_url: str) -> str:
     """Decode url string and get text query parameter value."""
 
-    full_url = unquote(search_url)
+    try:
+        full_url = unquote(search_url)
+    except TypeError:
+        return
+
     query_param = 'text='
     match = re.search(query_param, full_url)
 
