@@ -89,7 +89,14 @@ class TestImageSearch(TestEnvironment):
         PServ.show_image_test_case_succeeded('image_search_text')
 
         preview_image = image_page.get_preview_image(IMAGE_ORDER_NUMBER)
-        preview_image.click()
+
+        try:
+            preview_image.click()
+        except AttributeError:
+            raise ObjectIsNotFoundOnWebPage(
+                'None instead of preview_image object found.'
+            )
+
         image_view = image_page.get_image_view()
         self.assertIsNotNone(
             image_view,
@@ -115,7 +122,7 @@ class TestImageSearch(TestEnvironment):
         self.assertNotEqual(
             first_image,
             second_image,
-            msg='Image was not changed after clicking to next image.'
+            msg='No image change after clicking button to next image.'
         )
         PServ.show_image_test_case_succeeded('click_next_image')
 
