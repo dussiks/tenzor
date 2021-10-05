@@ -37,6 +37,7 @@ class TestImageSearch(TestEnvironment):
                 f'отличается от ожидаемого: {expected_text}'
         )
         PServ.show_image_test_case_succeeded('image_block')
+
         yandex_images.click()
         homepage.change_to_second_tab()
 
@@ -52,14 +53,21 @@ class TestImageSearch(TestEnvironment):
 
         categories = image_page.images_categories
 
-        if len(categories) < 1:  # if list is empty
+        if len(categories) < 1:  # if list with categories is empty
             raise ObjectIsNotFoundOnWebPage(
                 'No image categories found on web page.'
             )
 
         category = categories[IMAGES_BLOCK_NUMBER]
         category_url = image_page.get_image_category_url()
-        category.click()
+
+        try:
+            category.click()
+        except AttributeError:
+            raise ObjectIsNotFoundOnWebPage(
+                'None instead of category object found.'
+            )
+
         new_page_url = image_page.get_page_url()
         self.assertEqual(
             category_url,
