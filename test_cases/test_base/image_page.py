@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 
 from test_base.base_page import BasePage
+from test_base.exceptions import ObjectIsNotFoundOnWebPage
 
 
 class ImageLocator(object):
@@ -61,15 +62,31 @@ class YandexImagePage(BasePage):
     def get_image_view(self):
         return self.find_elem(ImageLocator.image_view)
 
-    def get_image_view_src(self) -> str:
+    def get_image_view_src(self):
         image = self.get_image_view()
-        source = image.get_attribute('src')
-        return source
+
+        try:
+            source = image.get_attribute('src')
+            return source
+        except AttributeError:
+            pass
 
     def slide_image_forward(self):
         forward_button = self.find_elem(ImageLocator.next_button)
-        forward_button.click()
+
+        try:
+            forward_button.click()
+        except AttributeError:
+            raise ObjectIsNotFoundOnWebPage(
+                'forward_button is not found on the web page.'
+            )
 
     def slide_image_backward(self):
         backward_button = self.find_elem(ImageLocator.previous_button)
-        backward_button.click()
+
+        try:
+            backward_button.click()
+        except AttributeError:
+            raise ObjectIsNotFoundOnWebPage(
+                'backward_button is not found on the web page.'
+            )
