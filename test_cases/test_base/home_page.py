@@ -38,4 +38,4 @@ class YandexHomePage(BasePage):
         return self.find_elem(HomeLocator.suggest_table)
 
     def get_images_block(self):
-        return self.find_elem(HomeLocator.images)
+        return self.images
